@@ -2,54 +2,6 @@ $(function() {
   initScrollingBehaviour();
   initCanvas();
 
-  // var $canvas = $('#home-canvas');
-  // var ctx = $canvas[0].getContext('2d');
-  // var circles = [2];
-
-  // for (var i = 0; i < 1; i++) {
-  //   var x = getRandomInt(0, $canvas.attr('width'));
-  //   var y = getRandomInt(0, $canvas.attr('height'));
-  //   var r = getRandomInt(50, 200);
-  //   var lineWidth = getRandomInt(2, 5);
-  //   var a = Math.random() * 2 * Math.PI;
-
-  //   circles[i] = { x: x, y: y, r: r };
-
-  //   for (var j = lineWidth; j > 0; j--) {
-  //     var trueRadius = r - (lineWidth - j) * getRandomInt(6, 20);
-  //     var a = Math.random() * 2 * Math.PI;
-
-  //     ctx.beginPath();
-  //     ctx.arc(x, y, trueRadius, 0, 2 * Math.PI);
-  //     ctx.strokeStyle = 'rgb(' + 45 + ', ' + 45 + ', ' + 45 + ')';
-  //     ctx.lineWidth = j;
-  //     ctx.stroke();
-
-  //     ctx.beginPath();
-  //     ctx.arc(x, y, trueRadius, a, a + 0.2);
-  //     ctx.strokeStyle =
-  //       'rgb(' +
-  //       getRandomInt(128, 255) +
-  //       ', ' +
-  //       getRandomInt(128, 255) +
-  //       ', ' +
-  //       getRandomInt(128, 255) +
-  //       ')';
-  //     ctx.lineWidth = j;
-  //     ctx.stroke();
-  //   }
-  // }
-
-  // animateCanvas()
-
-  // function animateCanvas() {
-  //   requestAnimationFrame(animateCanvas);
-
-  //   circles.forEach(function(circle) {
-  //     console.log(circle);
-  //   });
-  // }
-
   // $('#home').mousemove(function(e) {
   //   var offset = $(this).offset();
   //   var mouseX = e.pageX - offset.left;
@@ -62,11 +14,142 @@ $(function() {
 function initCanvas() {
   var $canvas = $('#home-canvas');
   var ctx = $canvas[0].getContext('2d');
-  var circles = [];
+  var numberOfSunsystems = 1;
+  var sunSystems = [];
+  var prevTime;
+  var delta;
 
   resizeCanvas();
 
   $(window).resize(resizeCanvas);
+
+  if (numberOfSunsystems > 0) {
+    for (var i = 0; i < numberOfSunsystems; i++) {
+      var r = getRandomInt(10, 50);
+      var x = getRandomInt(r, $canvas.attr('width') - r - getScrollBarWidth());
+      var y = getRandomInt(r, $canvas.attr('height') - r);
+      var hsl = [getRandomInt(0, 65), 100, getRandomInt(40, 90)];
+      var glow = 1;
+      var planetDistance = 2 * r;
+
+      sunSystems[i] = {
+        x: x,
+        y: y,
+        r: r,
+        hsl: hsl,
+        glow: glow,
+        planets: []
+      };
+
+      for (var j = 0; j < r / 5; j++) {
+        var planetRadius = getRandomInt(2, r / 5);
+
+        planetDistance += planetRadius * (Math.random() + 1.5);
+
+        var a = Math.random() * 2 * Math.PI;
+
+        sunSystems[i].planets[j] = {
+          x: x + planetDistance * Math.cos(a),
+          y: y + planetDistance * Math.sin(a),
+          a: a,
+          r: planetRadius,
+          distance: planetDistance,
+          msToCompleteOrbit: getRandomInt((j + 1) * 1000, (j + 2) * 1000),
+          rgb: [
+            getRandomInt(0, 255),
+            getRandomInt(0, 255),
+            getRandomInt(0, 255)
+          ]
+        };
+
+        planetDistance += planetRadius * (Math.random() + 1.5);
+      }
+    }
+  }
+
+  animateCanvas();
+
+  function animateCanvas(now) {
+    //requestAnimationFrame(animateCanvas);
+    ctx.clearRect(0, 0, $canvas.attr('width'), $canvas.attr('height'));
+
+    delta = now - prevTime;
+    prevTime = now;
+
+    if (isNaN(delta)) return;
+
+    sunSystems.forEach(function(sunSystem) {
+      drawSunSystem(sunSystem);
+    });
+  }
+
+  function drawSunSystem(sunSystem) {
+    drawSun(
+      sunSystem.x,
+      sunSystem.y,
+      sunSystem.r,
+      sunSystem.hsl,
+      sunSystem.glow
+    );
+
+    for (let i = 0; i < sunSystem.planets.length; i++) {
+      var planet = sunSystem.planets[i];
+
+      //drawOrbit(sunSystem.x, sunSystem.y, planet.distance);
+      drawPlanet(sunSystem.x, sunSystem.y, planet);
+    }
+  }
+
+  function drawSun(x, y, r, hsl /*, glow*/) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.fillStyle = 'hsl(' + hsl[0] + ', ' + hsl[1] + '%, ' + hsl[2] + '%)';
+    ctx.shadowBlur = r;
+    ctx.shadowColor = 'hsl(' + hsl[0] + ', ' + hsl[1] + '%, ' + hsl[2] + '%)';
+    ctx.fill();
+
+    for (let j = 0; j < glow; j++) {
+      ctx.shadowBlur = r * 10;
+      ctx.fill();
+    }
+  }
+
+  function drawPlanet(sunX, sunY, planet) {
+    planet.a += (delta / planet.msToCompleteOrbit) * 2;
+    if (planet.a >= 2 * Math.PI) planet.a -= 2 * Math.PI;
+
+    ctx.beginPath();
+    ctx.arc(
+      sunX + planet.distance * Math.cos(planet.a),
+      sunY + planet.distance * Math.sin(planet.a),
+      planet.r,
+      0,
+      2 * Math.PI
+    );
+    ctx.fillStyle =
+      'rgb(' + planet.rgb[0] + ',' + planet.rgb[1] + ',' + planet.rgb[2] + ')';
+    ctx.fill();
+  }
+
+  function drawOrbit(x, y, r) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgb(0,0,0)';
+    ctx.stroke();
+  }
+}
+
+function getScrollBarWidth() {
+  var $outer = $('<div>')
+      .css({ visibility: 'hidden', width: 100, overflow: 'scroll' })
+      .appendTo('body'),
+    widthWithScroll = $('<div>')
+      .css({ width: '100%' })
+      .appendTo($outer)
+      .outerWidth();
+  $outer.remove();
+  return 100 - widthWithScroll;
 }
 
 function resizeCanvas() {
