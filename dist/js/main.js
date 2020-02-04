@@ -102,7 +102,7 @@ function initScrollingBehaviour() {
     }
   });
 
-  $('#home > div > a.btn').click(function(e) {
+  $('#home > div > div > a.btn').click(function(e) {
     e.preventDefault();
     scrollToSection(1);
   });
