@@ -9,6 +9,8 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Inconsolata|Righteous&display=swap"
     />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
     <link rel="stylesheet" href="css/main.min.css" />
     <script src="js/lib/jquery-3.3.1.min.js"></script>
     <script src="js/lib/jquery.visible.min.js"></script>
@@ -19,7 +21,6 @@
   <body>
     <main>
       <section id="home">
-        <canvas id="home-canvas" width="1920" height="1080"></canvas>
         <div>
           <h1><span>S</span>HAW<span>N</span></h1>
           <h4>LESK<span>E</span></h4>
@@ -39,55 +40,57 @@
       <section id="about">
         <h1>ABOUT</h1>
         <p>
-          Voluptatibus ab error nulla hic magni. Qui rerum aut fugiat
-          reprehenderit natus ut. Sint eius placeat aut et voluptatibus laborum
-          necessitatibus quibusdam. Vitae rerum distinctio doloribus iste
-          inventore. Dignissimos molestias id. Quaerat ducimus non.
+          <b>Freelance Web Developer. Hip Hop Fan. Hobby Fantasy Map Artist.</b></br></br>
+          Always passionate with the work, be it as a hobby or professional. Love to
+          solve problems and creating intuitive and efficient products, while
+          all the time listening to Nas, Big Pun or KRS-One.</br>
+          When having freetime, I love spending time with family and friends or draw fantasy maps,
+          as I love to create worlds, just as I did when I started programming over ten years ago with a book about C++ Game Development.
         </p>
         <div class="photo"></div>
       </section>
       <section id="skills">
         <h1>SKILLS</h1>
-        <p>
-          Voluptatibus ab error nulla hic magni. Qui rerum aut fugiat
-          reprehenderit natus ut. Sint eius placeat aut et voluptatibus laborum
-          necessitatibus quibusdam. Vitae rerum distinctio doloribus iste
-          inventore. Dignissimos molestias id. Quaerat ducimus non.
-        </p>
-        <div>
-          <div class="skill">
-            <div><span>HTML5</span></div>
+        <div class="skill-box" id="skill-box-design">
+          <div class="skill-box-icon"><i class="material-icons">palette</i></div>
+          <h2>Design</h2>
+          <p>Voluptatibus ab error nulla hic magni. Qui rerum aut fugiat
+            reprehenderit natus ut. Sint eius placeat aut et voluptatibus
+            laborum necessitatibus quibusdam.</p>
+          <div class="skill-box-skills">
+            <h4>Tools I mastered:</h4>
+            <div>HTML5</div>
+            <div>CSS + SASS</div>
+            <div>UI/UX</div>
           </div>
-          <div class="skill">
-            <div>
-              <span>CSS3<br />+<br />SASS</span>
-            </div>
+        </div>
+        <div class="skill-box" id="skill-box-scripting">
+          <div class="skill-box-icon"><i class="material-icons">insert_drive_file</i><i class="material-icons">code</i></div>
+          <h2>Scripting</h2>
+          <p>Voluptatibus ab error nulla hic magni. Qui rerum aut fugiat
+            reprehenderit natus ut. Sint eius placeat aut et voluptatibus
+            laborum necessitatibus quibusdam.</p>
+          <div class="skill-box-skills">
+            <h4>Tools I mastered:</h4>
+            <div>JavaScript</div>
+            <div>Angular</div>
+            <div>ReactJS</div>
           </div>
-          <div class="skill">
-            <div>
-              <span>JS<br />+<br />Jquery</span>
-            </div>
-          </div>
-          <div class="skill">
-            <div><span>PHP</span></div>
-          </div>
-          <div class="skill">
-            <div><span>UI/UX</span></div>
-          </div>
-          <div class="skill">
-            <div><span>SQL</span></div>
-          </div>
-          <div class="skill">
-            <div><span>Angular</span></div>
-          </div>
-          <div class="skill">
-            <div><span>MongoDB</span></div>
-          </div>
-          <div class="skill">
-            <div><span>Node.js</span></div>
-          </div>
-          <div class="skill">
-            <div><span>ReactJS</span></div>
+        </div>
+        <div class="skill-box" id="skill-box-backend">
+          <div class="skill-box-icon"><i class="material-icons">settings</i></div>
+          <h2>Backend</h2>
+          <p>Voluptatibus ab error nulla hic magni. Qui rerum aut fugiat
+            reprehenderit natus ut. Sint eius placeat aut et voluptatibus
+            laborum necessitatibus quibusdam.</p>
+          <div class="skill-box-skills">
+            <h4>Tools I mastered:</h4>
+            <div>PHP</div>
+            <div>Zend Framework 2</div>
+            <div>Node.js</div>
+            <div>SQL</div>
+            <div>MongoDB</div>
+            <div>Git</div>
           </div>
         </div>
       </section>

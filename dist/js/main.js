@@ -14,63 +14,77 @@ $(function() {
 function initCanvas() {
   var $canvas = $('#home-canvas');
   var ctx = $canvas[0].getContext('2d');
-  var numberOfSunsystems = 1;
-  var sunSystems = [];
   var prevTime;
   var delta;
+  const TwoPI = 2 * Math.PI;
 
   resizeCanvas();
 
   $(window).resize(resizeCanvas);
 
-  if (numberOfSunsystems > 0) {
-    for (var i = 0; i < numberOfSunsystems; i++) {
-      var r = getRandomInt(10, 50);
-      var x = getRandomInt(r, $canvas.attr('width') - r - getScrollBarWidth());
-      var y = getRandomInt(r, $canvas.attr('height') - r);
-      var hsl = [getRandomInt(0, 65), 100, getRandomInt(40, 90)];
-      var glow = 1;
-      var planetDistance = 2 * r;
+  var solarSystems = createSolarSystemsArray(1);
 
-      sunSystems[i] = {
-        x: x,
-        y: y,
-        r: r,
-        hsl: hsl,
-        glow: glow,
-        planets: []
-      };
+  //animateCanvas();
 
-      for (var j = 0; j < r / 5; j++) {
-        var planetRadius = getRandomInt(2, r / 5);
+  function createSolarSystemsArray(numberOfSolarSystems) {
+    var retSolarSystems = [];
 
-        planetDistance += planetRadius * (Math.random() + 1.5);
+    Debug.StartTimer('solarsystems-init-loop');
 
-        var a = Math.random() * 2 * Math.PI;
+    if (numberOfSolarSystems > 0) {
+      for (var i = 0; i < numberOfSolarSystems; i++) {
+        var r = getRandomInt(50, 50); //10, 50
+        var x = getRandomInt(
+          r,
+          $canvas.attr('width') - r - getScrollBarWidth()
+        ); //r, $canvas.attr('width') - r - getScrollBarWidth()
+        var y = getRandomInt(r, $canvas.attr('height') - r); //r, $canvas.attr('height') - r
+        var hsl = [getRandomInt(0, 65), 100, getRandomInt(40, 90)]; //[getRandomInt(0, 65), 100, getRandomInt(40, 90)]
+        var glow = getRandomInt(10, 10); //2, 10
+        var planetDistance = 2 * r;
 
-        sunSystems[i].planets[j] = {
-          x: x + planetDistance * Math.cos(a),
-          y: y + planetDistance * Math.sin(a),
-          a: a,
-          r: planetRadius,
-          distance: planetDistance,
-          msToCompleteOrbit: getRandomInt((j + 1) * 1000, (j + 2) * 1000),
-          rgb: [
-            getRandomInt(0, 255),
-            getRandomInt(0, 255),
-            getRandomInt(0, 255)
-          ]
+        retSolarSystems[i] = {
+          x: x,
+          y: y,
+          r: r,
+          hsl: hsl,
+          glow: glow,
+          planets: []
         };
 
-        planetDistance += planetRadius * (Math.random() + 1.5);
+        for (var j = 0; j < r / 5; j++) {
+          var planetRadius = getRandomInt(10, 10); //2, r / 5
+
+          planetDistance += planetRadius * (Math.random() + 1.5); //Math.random() + 1.5
+
+          var a = Math.random() * 2 * Math.PI;
+
+          retSolarSystems[i].planets[j] = {
+            x: x + planetDistance * Math.cos(a),
+            y: y + planetDistance * Math.sin(a),
+            a: a,
+            r: planetRadius,
+            distance: planetDistance,
+            msToCompleteOrbit: getRandomInt((j + 1) * 1000, (j + 2) * 1000), //(j + 1) * 1000, (j + 2) * 1000
+            rgb: [
+              getRandomInt(0, 255), //10, 50
+              getRandomInt(0, 255), //10, 50
+              getRandomInt(0, 255) //10, 50
+            ]
+          };
+
+          planetDistance += planetRadius * (Math.random() + 1.5); //Math.random() + 1.5
+        }
       }
     }
+    Debug.StopTimer('solarsystems-init-loop');
+
+    return retSolarSystems;
   }
 
-  animateCanvas();
-
   function animateCanvas(now) {
-    //requestAnimationFrame(animateCanvas);
+    Debug.StartTimer('animateCanvas');
+    requestAnimationFrame(animateCanvas);
     ctx.clearRect(0, 0, $canvas.attr('width'), $canvas.attr('height'));
 
     delta = now - prevTime;
@@ -78,29 +92,36 @@ function initCanvas() {
 
     if (isNaN(delta)) return;
 
-    sunSystems.forEach(function(sunSystem) {
-      drawSunSystem(sunSystem);
+    solarSystems.forEach(function(solarSystem) {
+      drawSolarSystem(solarSystem);
     });
+    Debug.StopTimer('animateCanvas');
   }
 
-  function drawSunSystem(sunSystem) {
+  function drawSolarSystem(solarSystem) {
+    Debug.StartTimer('drawSun');
     drawSun(
-      sunSystem.x,
-      sunSystem.y,
-      sunSystem.r,
-      sunSystem.hsl,
-      sunSystem.glow
+      solarSystem.x,
+      solarSystem.y,
+      solarSystem.r,
+      solarSystem.hsl,
+      solarSystem.glow
     );
+    Debug.StopTimer('drawSun');
 
-    for (let i = 0; i < sunSystem.planets.length; i++) {
-      var planet = sunSystem.planets[i];
+    Debug.StartTimer('drawPlanets');
+    for (let i = 0; i < solarSystem.planets.length; i++) {
+      var planet = solarSystem.planets[i];
 
-      //drawOrbit(sunSystem.x, sunSystem.y, planet.distance);
-      drawPlanet(sunSystem.x, sunSystem.y, planet);
+      Debug.StartTimer('drawPlanet' + i);
+      drawOrbit(solarSystem.x, solarSystem.y, planet.distance);
+      drawPlanet(solarSystem.x, solarSystem.y, planet);
+      Debug.StopTimer('drawPlanet' + i);
     }
+    Debug.StopTimer('drawPlanets');
   }
 
-  function drawSun(x, y, r, hsl /*, glow*/) {
+  function drawSun(x, y, r, hsl, glow) {
     ctx.beginPath();
     ctx.arc(x, y, r, 0, 2 * Math.PI);
     ctx.fillStyle = 'hsl(' + hsl[0] + ', ' + hsl[1] + '%, ' + hsl[2] + '%)';
@@ -116,7 +137,7 @@ function initCanvas() {
 
   function drawPlanet(sunX, sunY, planet) {
     planet.a += (delta / planet.msToCompleteOrbit) * 2;
-    if (planet.a >= 2 * Math.PI) planet.a -= 2 * Math.PI;
+    if (planet.a >= TwoPI) planet.a -= TwoPI;
 
     ctx.beginPath();
     ctx.arc(
@@ -124,7 +145,7 @@ function initCanvas() {
       sunY + planet.distance * Math.sin(planet.a),
       planet.r,
       0,
-      2 * Math.PI
+      TwoPI
     );
     ctx.fillStyle =
       'rgb(' + planet.rgb[0] + ',' + planet.rgb[1] + ',' + planet.rgb[2] + ')';
@@ -133,7 +154,7 @@ function initCanvas() {
 
   function drawOrbit(x, y, r) {
     ctx.beginPath();
-    ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.arc(x, y, r, 0, TwoPI);
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'rgb(0,0,0)';
     ctx.stroke();
